@@ -61,12 +61,32 @@
 2. Specs
   ### Musts
   * Spec: Create game array, a 1D array that has 81 indicies representing the locations on the board.
-      Input: 81 index array, with zeros representing information to be filled output
-      Output: Submit input to SudokuSolver
+      Input: new Sudoku();
+      Output:     
+          this.board = [
+            0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0
+          ]
 
-  * Spec: Creates arrays representing Columns, Rows, or Nonet from indicies on game array.
-      Input: GameArray
-      Output: Array representing a column set, row set, or nonet set.
+  * Spec: Creates arrays representing Rows, from indicies on game board array.
+      Input: Row 3
+      Output: Array [ this.board[18], this.board[19], this.board[20], this.board[21], this.board[22], this.board[23], this.board[24], this.board[25], this.board[26] ].
+
+  * Spec: Creates arrays representing Columns, from indicies on game board array.
+      Input: Column 3
+      Output: Array [ this.board[2], this.board[11], this.board[20], this.board[29], this.board[38], this.board[47], this.board[56], this.board[65], this.board[74] ].
+
+  * Spec: Creates arrays representing Nonet, from indicies on game board array. Nonets represented alphabetically.
+      Input: 2
+      Output: Array [
+      this.board[3], this.board[4], this.board[5], this.board[12], this.board[13], this.board[14], this.board[21], this.board[22], this.board[23] ].
 
   * Spec: Checks for duplicates in array: [1, 4, 6, 5, 7, 4, 9, 2, 8], false.
       Input: Column Set, Row Set, or Nonet set
