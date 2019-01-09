@@ -45,4 +45,30 @@ export class Sudoku {
   return nonetOutput;
   }
 
+  isThereAMatchInTheRow(rowNumber, numberToFindInRow) {
+    let matchArray = this.findRow(rowNumber);
+    let isMatch = matchArray.indexOf(numberToFindInRow);
+    return isMatch;
+  }
+
+  isThereAMatchInTheColumn(columnNumber, numberToFindInColumn) {
+    let matchArray = this.findColumn(columnNumber);
+    let isMatch = matchArray.indexOf(numberToFindInColumn);
+    return isMatch;
+  }
+
+  isThereAMatchInTheNonet(nonetNumber, numberToFindInNonet) {
+    let matchArray = this.findNonet(nonetNumber);
+    let isMatch = matchArray.indexOf(numberToFindInNonet);
+    return isMatch;
+  }
+
+  findFirstPlayableCell(nonetNumber) {
+    let nonetInPlay = this.findNonet(nonetNumber);
+    let currentCell = nonetInPlay.indexOf(0);
+    return currentCell;
+  }
+
+
+
 }

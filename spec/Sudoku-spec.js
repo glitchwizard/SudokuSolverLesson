@@ -36,19 +36,44 @@ describe('Sudoku Solver', function() {
     expect(nonetResult.length).toEqual(9);
   });
 
-  it('should return true if array values match expected values', function() {
+  it('should return true if row array values match expected row values', function() {
     let foundArray = testSudoku.findRow(1);
     expect(foundArray).toEqual([ 5, 3, 0, 0, 7, 0, 0, 0, 0 ]);
   });
 
-  it('should return true if array values match expected values', function() {
+  it('should return true if column array values match expected values', function() {
     let foundArray = testSudoku.findColumn(1);
     expect(foundArray).toEqual([ 5, 6, 0, 8, 4, 7, 0, 0, 0 ]);
   });
 
-  it('should return true if array values match expected values', function() {
+  it('should return true if nonet array values match expected nonet values', function() {
     let foundArray = testSudoku.findNonet(1);
     expect(foundArray).toEqual([ 5, 6, 0, 3, 0, 9, 0, 0, 8 ]);
   });
+
+  it('should return true when there is a match of a particular number if the row has a matching value in it', function() {
+    let result = testSudoku.isThereAMatchInTheRow(1,5);
+    expect(result).toBeGreaterThan(-1);
+  })
+
+  it('should return true when there is a match of a particular number if the column has a matching value in it', function() {
+    let result = testSudoku.isThereAMatchInTheColumn(1,5);
+    expect(result).toBeGreaterThan(-1);
+  })
+
+  it('should return true when there is a match of a particular number if the nonet has a matching value in it', function() {
+    let result = testSudoku.isThereAMatchInTheNonet(1,5);
+    expect(result).toBeGreaterThan(-1);
+  })
+
+  it('should return the index of the first playable cell in a given nonet', function(){
+    let playableCell = testSudoku.findFirstPlayableCell(1);
+    expect(playableCell).toEqual(2);
+  })
+  
+  it('should return the column number, row number and nonet number based on the game board array index number', function(){
+
+  })
+
 
 });
