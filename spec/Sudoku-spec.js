@@ -70,9 +70,11 @@ describe('Sudoku Solver', function() {
     let playableCell = testSudoku.findFirstPlayableCell(1);
     expect(playableCell).toEqual(2);
   })
-  
-  it('should return the column number, row number and nonet number based on the game board array index number', function(){
 
+  it('should return the column number and row number based on the nonet number and first playable cell in that nonet', function(){
+    let nonetNumber = 5;
+    let firstPlayableCell = testSudoku.findFirstPlayableCell(5);
+    let result = testSudoku.findRowAndColumnNumbers(5,firstPlayableCell);
   })
 
 

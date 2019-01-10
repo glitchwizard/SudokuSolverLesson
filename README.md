@@ -92,6 +92,9 @@
       Input: Column Set, Row Set, or Nonet set
       Output: True or False
 
+  ### Notes
+  * Any given index belongs to a single nonet.
+  
   ### Stretch
   * Spec: Gets user input to create a playable game
   * Spec: Solve the game layout immediately, so that it can be checked that the game is even playable.
