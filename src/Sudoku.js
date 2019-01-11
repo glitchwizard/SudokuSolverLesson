@@ -1,3 +1,5 @@
+// import { Cell } from './Cell.js';
+
 export class Sudoku {
   constructor() {
     this.board = [
@@ -10,13 +12,15 @@ export class Sudoku {
       0,0,0,0,0,0,0,0,0,
       0,0,0,0,0,0,0,0,0,
       0,0,0,0,0,0,0,0,0
-    ]
-  }
-
-  gameIndexArray(){
-    const IndexArray =
-     [ 00, 01, 02, 03, 04, 05, 06, 07, 08,
-       09, 10, 11, 12, 13, 14, 15, 16, 17,
+    ];
+    this.nonetPencilMarkArray = [
+      0, 0, 0,
+      0, 0, 0,
+      0, 0, 0
+    ]; // this will be a 3x3 array that will represent the nonet that is in play at the current moment to check matches against.
+    this.indexArray =
+      [ 0, 1,  2,  3,  4,  5,  6,  7,  8,
+        9, 10, 11, 12, 13, 14, 15, 16, 17,
        18, 19, 20, 21, 22, 23, 24, 25, 26,
        27, 28, 29, 30, 31, 32, 33, 34, 35,
        36, 37, 38, 39, 40, 41, 42, 43, 44,
@@ -24,133 +28,160 @@ export class Sudoku {
        54, 55, 56, 57, 58, 59, 60, 61, 62,
        63, 64, 65, 66, 67, 68, 69, 70, 71,
        72, 73, 74, 75, 76, 77, 78, 79, 80];
-    return IndexArray;
+    this.currentNonet = [];
   }
 
-  findRow(rowNumber) {
+  findArrayOfRowFromRowNumber(rowNumber, inputArray) {
     let i = (rowNumber *  9) - 9;
     let j = i + 8;
     let rowOutput = [];
     for (i; i <= j; i++) {
-      rowOutput.push(this.board[i]);
+      rowOutput.push(inputArray[i]);
     }
   return rowOutput;
   }
 
-  findColumn(columnNumber) {
+  findArrayOfColumnFromColumnNumber(columnNumber, inputArray) {
     let columnOutput = [];
     for (let i = columnNumber - 1; i <= 80; i+=9) {
-      columnOutput.push(this.board[i]);
+      columnOutput.push(inputArray[i]);
     }
   return columnOutput;
   }
 
-  findNonet(nonetNumber) {
+  findArrayOfNonetFromNonetNumber(nonetNumber, inputArray) {
     const startIndices = [ 0, 3, 6, 27, 30, 33, 54, 57, 60 ];
     let i = startIndices[nonetNumber-1];
     let nonetOutput = [];
     let j = i + 3;
-    for (i; i < j; i++) {
-      let kk = i + 20;
-      for (let k = i; k <= kk; k += 9) {
-        nonetOutput.push(this.board[k]);
+    let kk = i + 20;
+
+    for (let k = i; k <= kk; k += 9) {
+      for (i ; i < j; i++) {
+        nonetOutput.push(inputArray[i]);
       }
+      i+=6;
+      j=i+3;
     }
   return nonetOutput;
   }
 
-  isThereAMatchInTheRow(rowNumber, numberToFindInRow) {
-    let matchArray = this.findRow(rowNumber);
+  findGameIndexFromNonetNumberAndNonetIndex(nonetNumber, nonetIndex) {
+    const startIndices = [ 0, 3, 6, 27, 30, 33, 54, 57, 60 ];
+    let i = startIndices[nonetNumber-1];
+    let nonetOutput = [];
+    let j = i + 3;
+    let kk = i + 20;
+    for (let k = i; k <= kk; k += 9) {
+      for (i ; i < j; i++) {
+        nonetOutput.push(i);
+      }
+      i+=6;
+      j=i+3;
+    }
+  return nonetOutput[nonetIndex];
+  }
+
+  isThereAMatchInTheRow(rowNumber, numberToFindInRow, inputArray) {
+    let matchArray = this.findArrayOfRowFromRowNumber(rowNumber, inputArray);
     let isMatch = matchArray.indexOf(numberToFindInRow);
     return isMatch;
   }
 
-  isThereAMatchInTheColumn(columnNumber, numberToFindInColumn) {
-    let matchArray = this.findColumn(columnNumber);
+  isThereAMatchInTheColumn(columnNumber, numberToFindInColumn, inputArray) {
+    let matchArray = this.findArrayOfColumnFromColumnNumber(columnNumber, inputArray);
     let isMatch = matchArray.indexOf(numberToFindInColumn);
     return isMatch;
   }
 
-  isThereAMatchInTheNonet(nonetNumber, numberToFindInNonet) {
-    let matchArray = this.findNonet(nonetNumber);
+  isThereAMatchInTheNonet(nonetNumber, numberToFindInNonet, inputArray) {
+    let matchArray = this.findArrayOfNonetFromNonetNumber(nonetNumber, inputArray);
     let isMatch = matchArray.indexOf(numberToFindInNonet);
     return isMatch;
   }
 
-  findFirstPlayableCell(nonetNumber) {
-    let nonetInPlay = this.findNonet(nonetNumber);
+  findRowNumberFromGameArrayIndex(gameArrayIndexNumber){
+    for (let rowNumber = 1; rowNumber <= 9; rowNumber++){
+      if (this.isThereAMatchInTheRow(rowNumber, gameArrayIndexNumber, this.indexArray) >= 0) {
+        return rowNumber;
+      }
+    }
+  }
+
+  findColumnNumberFromGameArrayIndex(gameArrayIndexNumber){
+    for (let columnNumber = 1; columnNumber <= 9; columnNumber++){
+        if (this.isThereAMatchInTheColumn(columnNumber, gameArrayIndexNumber, this.indexArray) >= 0) {
+          return columnNumber;
+        }
+    }
+  }
+
+  findNonetNumberFromGameArrayIndex(gameArrayIndexNumber){
+    for (let nonetNumber = 1; nonetNumber <= 9; nonetNumber++){
+        if (this.isThereAMatchInTheNonet(nonetNumber, gameArrayIndexNumber, this.indexArray) >= 0) {
+          return nonetNumber;
+        }
+    }
+  }
+
+  findFirstPlayableCell(nonetNumber, inputArray) {
+    let nonetInPlay = this.findArrayOfNonetFromNonetNumber(nonetNumber, inputArray);
     let currentCell = nonetInPlay.indexOf(0);
     return currentCell;
   }
 
-  findRowNumberFromGameArrayIndex(gameArrayIndex){
 
+
+  playGameWithNumber(numberInPlay) {
+    let pencilMarks = 0;
+    let gameIndexOutput;
+
+    for (let nonetNumberInPlay = 1; nonetNumberInPlay <= 9; nonetNumberInPlay++){ // Get Nonet
+      let isThisPlayableIndexReturn = this.isThereAMatchInTheNonet(nonetNumberInPlay, numberInPlay, this.board); // Check nonet for numberInPlay, returns nonet index of playable number
+      if (isThisPlayableIndexReturn >= 0) {
+        //break out of if statement.
+      } else {
+
+        let firstPlayableCell = this.findFirstPlayableCell(nonetNumberInPlay, this.board); //We have a playable number, check the rows and columns for each playable cell
+        let currentGameIndex = this.findGameIndexFromNonetNumberAndNonetIndex(nonetNumberInPlay, firstPlayableCell);
+        let currentRow = this.findRowNumberFromGameArrayIndex(currentGameIndex);
+        isThisPlayableIndexReturn = this.isThereAMatchInTheRow(currentRow, numberInPlay, this.board);
+        if (isThisPlayableIndexReturn >= 0) {
+          // break out of if statement
+        } else {
+          let currentColumn = this.findColumnNumberFromGameArrayIndex(currentGameIndex);
+          isThisPlayableIndexReturn = this.isThereAMatchInTheColumn(currentColumn, numberInPlay, this.board);
+          if (isThisPlayableIndexReturn >= 0){
+            // break out of if statement;
+          } else {
+            //replace game array index with whatever number is in play.
+            gameIndexOutput = currentGameIndex;
+            pencilMarks++;
+          }
+        }
+      }
+      debugger;
+      if (pencilMarks === 0 && nonetNumberInPlay === 9){
+        // break;
+      } else if (pencilMarks === 1 && nonetNumberInPlay === 9) {
+        this.board[gameIndexOutput] = numberInPlay;
+        debugger;
+        console.log("This is the board after a change: " + this.board);
+      }
+      pencilMarks = 0;
+    }
   }
 
-  // findRowAndColumnNumbers(nonetNumber, firstPlayableCell){
-  //   const startIndices = [ 0, 3, 6, 27, 30, 33, 54, 57, 60 ];
-  //   const nonetNumbers = [ 1, 2, 3, 4, 5, 6, 7, 8, 9]
-  //
-  //   let rowNumber;
-  //   let columnNumber;
-  //
-  //   if (nonetNumber >= 1 && nonetNumber < 4) {
-  //     if (firstPlayableCell >= 0 && firstPlayableCell < 3){
-  //       rowNumber = 1;
-  //     } else if (firstPlayableCell >= 3 && firstPlayableCell < 6) {
-  //       rowNumber = 2;
-  //     } else if (firstPlayableCell >= 6) {
-  //       rowNumber = 3;
-  //     }
-  //   } else if (nonetNumber >= 4 && nonetNumber < 7) {
-  //     if (firstPlayableCell >= 0 && firstPlayableCell < 3){
-  //       rowNumber = 4;
-  //     } else if (firstPlayableCell >= 3 && firstPlayableCell < 6) {
-  //       rowNumber = 5;
-  //     } else if (firstPlayableCell >= 6) {
-  //       rowNumber = 6;
-  //     }
-  //   } else if (nonetNumber >= 7) {
-  //     if (firstPlayableCell >= 0 && firstPlayableCell < 3){
-  //       rowNumber = 7;
-  //     } else if (firstPlayableCell >= 3 && firstPlayableCell < 6) {
-  //       rowNumber = 8;
-  //     } else if (firstPlayableCell >= 6) {
-  //       rowNumber = 9;
-  //     }
-  //   }
-  //
-  //   if (nonetNumber >= 1 && nonetNumber < 4) {
-  //     if (firstPlayableCell >= 0 && firstPlayableCell < 3){
-  //       columnNumber = firstPlayableCell + startIndices[nonetNumber];
-  //     } else if (firstPlayableCell >= 3 && firstPlayableCell < 6) {
-  //       columnNumber = firstPlayableCell + startIndices[nonetNumber] + 6
-  //     } else if (firstPlayableCell >= 6) {
-  //       columnNumber = firstPlayableCell + startIndices[nonetNumber] + 12 ;
-  //     }
-  //   } else if (nonetNumber >= 4 && nonetNumber < 7) {
-  //     if (firstPlayableCell >= 0 && firstPlayableCell < 3){
-  //       columnNumber = 4;
-  //     } else if (firstPlayableCell >= 3 && firstPlayableCell < 6) {
-  //       columnNumber = 5;
-  //     } else if (firstPlayableCell >= 6) {
-  //       columnNumber = 6;
-  //     }
-  //   } else if (nonetNumber >= 7) {
-  //     if (firstPlayableCell >= 0 && firstPlayableCell < 3){
-  //       columnNumber = 7;
-  //     } else if (firstPlayableCell >= 3 && firstPlayableCell < 6) {
-  //       columnNumber = 8;
-  //     } else if (firstPlayableCell >= 6) {
-  //       columnNumber = 9;
-  //     }
-  //   }
-
-
-    let foundColumnAndRow = []; // Array of length 2
-    let parentRowNumber = ;
-    let parentColumnNumber = ;
+  PlayGameWithAllNumbers() {
+    let gameComplete = this.board.indexOf(0);
+    if (gameComplete < 0){
+      console.log("Congratulations, it's solved,");
+      console.log("here's the answer: " + this.board);
+    } else {
+      for (let numberInPlay = 1 ; numberInPlay < 9; numberInPlay++) {
+        this.playGameWithNumber(numberInPlay);
+      }
+    }
 
   }
-
 }
